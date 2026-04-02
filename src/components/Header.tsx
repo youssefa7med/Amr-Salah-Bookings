@@ -56,14 +56,7 @@ export default function Header({ isStaff, onLogout }: HeaderProps) {
               {i18n.language === 'ar' ? 'EN' : 'AR'}
             </button>
 
-            {!isStaff ? (
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-lg bg-gold-500 hover:bg-gold-600 text-white transition-colors font-medium"
-              >
-                {t('header.dashboard')}
-              </Link>
-            ) : (
+            {isStaff && (
               <>
                 <Link to="/queue" className={navLinkClass('/queue')}>
                   🎯 الطابور
@@ -104,27 +97,14 @@ export default function Header({ isStaff, onLogout }: HeaderProps) {
                 {i18n.language === 'ar' ? 'EN' : 'AR'}
               </button>
 
-              {/* Menu button - Visible when staff is logged in */}
               {isStaff && (
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   className="p-2 bg-gold-500 hover:bg-gold-600 rounded text-white font-bold text-lg transition-colors z-40 relative"
-                  title="لوحة التحكم"
-                  aria-label="فتح لوحة التحكم"
+                  aria-label="فتح قائمة التنقل"
                 >
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
-              )}
-
-              {/* Login button - Visible when NOT logged in */}
-              {!isStaff && (
-                <Link
-                  to="/login"
-                  className="px-3 py-2 rounded-lg bg-gold-500 hover:bg-gold-600 text-white font-semibold transition-colors z-40 relative text-sm flex-shrink-0"
-                  title="لوحة التحكم"
-                >
-                  لوحة التحكم
-                </Link>
               )}
             </div>
           </div>

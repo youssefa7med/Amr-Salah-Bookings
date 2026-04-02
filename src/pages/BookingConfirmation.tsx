@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Loader, CheckCircle } from 'lucide-react'
 import { useBookings } from '../hooks/useBookings'
+import Logo from '../components/Logo'
 
 interface BookingConfirmationProps {
   bookingData: {
@@ -49,6 +50,7 @@ export default function BookingConfirmation({ bookingData, onConfirm }: BookingC
   if (bookingCreated && bookingId) {
     return (
       <div className="text-center py-12">
+        <Logo size="lg" className="mx-auto mb-6" />
         <CheckCircle className="mx-auto mb-4 text-green-600" size={64} />
         <h3 className="text-2xl font-bold text-gray-800 mb-4">{t('booking.success')}</h3>
         <div className="bg-green-50 p-6 rounded-lg mb-6 space-y-2 text-right">

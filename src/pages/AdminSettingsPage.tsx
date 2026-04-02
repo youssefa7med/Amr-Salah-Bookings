@@ -238,7 +238,7 @@ export default function AdminSettingsPage() {
                   type={activeTab === 'barbers' ? 'email' : 'number'}
                   value={formData.email_or_duration}
                   onChange={(e) => setFormData({ ...formData, email_or_duration: e.target.value })}
-                  placeholder={activeTab === 'barbers' ? 'ahmad@elking.com' : '30'}
+                  placeholder={activeTab === 'barbers' ? 'ahmad@amrsalah.com' : '30'}
                   className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-gold-500"
                 />
               </div>

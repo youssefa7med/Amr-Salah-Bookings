@@ -557,7 +557,7 @@ export default function BookingPage() {
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="text-center mb-12">
-          <img src="/logo.png" alt="Amr Salah" className="h-20 mx-auto mb-4 object-contain" />
+          <img src="/logo.png" alt="Amr Salah" className="h-40 md:h-48 mx-auto mb-4 object-contain" />
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">{t('booking.title')}</h1>
           <p className="text-xl text-slate-300">{t('booking.subtitle')}</p>
         </div>

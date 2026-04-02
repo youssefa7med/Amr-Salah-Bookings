@@ -46,8 +46,8 @@ export default function Header({ isStaff, onLogout }: HeaderProps) {
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <img src="/logo.png" alt="Amr Salah" className="h-12 object-contain" />
             <div>
-              <span className="text-2xl font-bold text-gold-400">امر سلاح</span>
-              <p className="text-xs text-gold-300">Barber Shop</p>
+              <span className="text-2xl font-bold text-gold-400">عمرو صلاح</span>
+              <p className="text-xs text-gold-300">Barber Shop</p>\n            </div>\n          </Link>
             </div>
           </Link>
 
@@ -89,7 +89,7 @@ export default function Header({ isStaff, onLogout }: HeaderProps) {
           <div className="flex items-center justify-between gap-2 w-full">
             <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0">
               <img src="/logo.png" alt="Amr Salah" className="h-10 object-contain" />
-              <span className="text-lg font-bold text-gold-400">امر سلاح</span>
+              <span className="text-lg font-bold text-gold-400">عمرو صلاح</span>
             </Link>
 
             <div className="flex items-center gap-2 flex-shrink-0">

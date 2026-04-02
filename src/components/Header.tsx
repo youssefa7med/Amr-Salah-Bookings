@@ -9,7 +9,7 @@ interface HeaderProps {
 }
 
 export default function Header({ isStaff, onLogout }: HeaderProps) {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 

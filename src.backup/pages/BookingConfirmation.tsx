@@ -24,15 +24,17 @@ export default function BookingConfirmation({ bookingData, onConfirm }: BookingC
 
   const handleConfirm = async () => {
     try {
+      const dateTime = `${bookingData.date}T${bookingData.time}:00`
       const booking = await createBooking({
+        client_id: `customer-${bookingData.clientPhone}`,
+        client_name: bookingData.clientName,
+        client_phone: bookingData.clientPhone,
         barber_id: bookingData.barberId,
-        service_id: 'default-service',
-        customer_name: bookingData.clientName,
-        customer_phone: bookingData.clientPhone,
-        booking_date: bookingData.date,
-        booking_time: bookingData.time,
+        barber_name: bookingData.barberName,
+        service_name: 'قص شعر',
+        booking_time: dateTime,
+        duration: 30,
         status: 'pending',
-        notes: '',
       })
 
       if (booking?.id) {

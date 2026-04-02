@@ -1,23 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+* {
+  @apply box-border;
+}
+
+html {
+  @apply scroll-smooth;
+}
+
+body {
+  @apply bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white antialiased;
+  font-family: 'Outfit', 'Cairo', sans-serif;
+}
+
+[dir="rtl"] {
+  font-family: 'Cairo', 'Outfit', sans-serif;
+}
+
+/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Custom components */
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-gold-500 hover:bg-gold-600 text-white rounded-lg font-semibold transition-colors;
+  }
 
-html {
-  direction: rtl;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+  .btn-secondary {
+    @apply px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold transition-colors;
+  }
 
-body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-}
+  .card {
+    @apply bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-6;
+  }
 
-#root {
-  min-height: 100vh;
+  .input-field {
+    @apply w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 transition-colors;
+  }
 }

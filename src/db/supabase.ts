@@ -1,47 +1,61 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.warn('⚠️ Supabase credentials not found in .env.local')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+// Type definitions
 export interface Barber {
   id: string
   name: string
-  active: boolean
-  created_at: string
-  updated_at: string
-  hire_date: string
+  phone: string
+  email?: string
+  bio?: string
+  avatar_url?: string
+  is_active: boolean
+  specialties: string[]
+  experience_years: number
 }
 
 export interface Service {
   id: string
-  name: string
   name_ar: string
-  duration: number
+  name_en: string
+  description_ar?: string
+  description_en?: string
   price: number
-  active: boolean
-  created_at: string
-  updated_at: string
+  duration_minutes: number
+  category: string
+  is_active: boolean
 }
 
 export interface Booking {
   id: string
-  client_id: string
-  client_name: string
-  client_phone: string
   barber_id: string
-  barber_name: string
-  service_name: string
+  service_id: string
+  customer_name: string
+  customer_phone: string
+  customer_email?: string
+  booking_date: string
   booking_time: string
-  duration: number
-  queue_number: number
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  notes?: string
   created_at: string
   updated_at: string
-  notes?: string
+}
+
+export interface WorkingHours {
+  id: string
+  barber_id: string
+  day_of_week: number
+  start_time: string
+  end_time: string
+  is_working: boolean
+  break_start?: string
+  break_end?: string
 }

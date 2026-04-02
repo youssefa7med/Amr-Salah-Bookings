@@ -1,0 +1,77 @@
+{
+  "header": {
+    "booking": "Book Now",
+    "dashboard": "Dashboard",
+    "language": "Language"
+  },
+  "booking": {
+    "title": "Book Your Appointment",
+    "subtitle": "Select service and preferred time",
+    "selectBarber": "Select Barber",
+    "selectService": "Select Service",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "yourName": "Your Name",
+    "yourPhone": "Phone Number",
+    "yourEmail": "Email (Optional)",
+    "notes": "Notes (Optional)",
+    "book": "Book Now",
+    "cancel": "Cancel",
+    "success": "Booking successful! We will contact you soon",
+    "error": "An error occurred, please try again"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "logout": "Logout",
+    "todayBookings": "Today's Bookings",
+    "allBookings": "All Bookings",
+    "services": "Services",
+    "barbers": "Barbers",
+    "settings": "Settings",
+    "addService": "Add Service",
+    "addBarber": "Add Barber"
+  },
+  "booking_status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidPhone": "Invalid phone number",
+    "invalidEmail": "Invalid email address"
+  },
+  "admin": {
+    "settings": "Shop Settings",
+    "barbers": "Barbers",
+    "services": "Services",
+    "workingHours": "Working Hours",
+    "addBarber": "Add Barber",
+    "addService": "Add Service",
+    "editBarber": "Edit Barber",
+    "editService": "Edit Service",
+    "deleteConfirm": "Are you sure?",
+    "barberName": "Barber Name",
+    "barberPhone": "Barber Phone",
+    "barberEmail": "Barber Email",
+    "serviceName": "Service Name",
+    "servicePrice": "Price",
+    "serviceDuration": "Duration (minutes)",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "bookingAdvanced": {
+    "availableSlots": "Available Time Slots",
+    "booked": "Booked",
+    "available": "Available",
+    "phoneWarning": "⚠️ This phone number already has a booking at",
+    "previousBooking": "Previous Booking",
+    "smartSelection": "Auto-select nearest available time",
+    "selectFromGrid": "Select from grid above",
+    "viewBooking": "View Details"
+  }
+}

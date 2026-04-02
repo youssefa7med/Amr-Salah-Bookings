@@ -1,0 +1,77 @@
+{
+  "header": {
+    "booking": "احجز موعد",
+    "dashboard": "لوحة التحكم",
+    "language": "اللغة"
+  },
+  "booking": {
+    "title": "احجز موعدك الآن",
+    "subtitle": "اختر الخدمة والموعد المناسب",
+    "selectBarber": "اختر الحلاق",
+    "selectService": "اختر الخدمة",
+    "selectDate": "اختر التاريخ",
+    "selectTime": "اختر الوقت",
+    "yourName": "اسمك",
+    "yourPhone": "رقم الهاتف",
+    "yourEmail": "البريد الإلكتروني (اختياري)",
+    "notes": "ملاحظات (اختيارية)",
+    "book": "احجز الآن",
+    "cancel": "إلغاء",
+    "success": "تم الحجز بنجاح! سنتواصل معك قريباً",
+    "error": "حدث خطأ، حاول مرة أخرى"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "logout": "تسجيل الخروج",
+    "todayBookings": "الحجوزات اليوم",
+    "allBookings": "جميع الحجوزات",
+    "services": "الخدمات",
+    "barbers": "الحلاقيون",
+    "settings": "الإعدادات",
+    "addService": "إضافة خدمة",
+    "addBarber": "إضافة حلاق"
+  },
+  "booking_status": {
+    "pending": "قيد الانتظار",
+    "confirmed": "مؤكد",
+    "completed": "اكتمل",
+    "cancelled": "ملغى"
+  },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "invalidPhone": "رقم هاتف غير صحيح",
+    "invalidEmail": "بريد إلكتروني غير صحيح"
+  },
+  "admin": {
+    "settings": "إعدادات المحل",
+    "barbers": "الحلاقون",
+    "services": "الخدمات",
+    "workingHours": "مواعيد العمل",
+    "addBarber": "إضافة حلاق",
+    "addService": "إضافة خدمة",
+    "editBarber": "تعديل حلاق",
+    "editService": "تعديل خدمة",
+    "deleteConfirm": "هل أنت متأكد من الحذف؟",
+    "barberName": "اسم الحلاق",
+    "barberPhone": "هاتف الحلاق",
+    "barberEmail": "بريد الحلاق",
+    "serviceName": "اسم الخدمة",
+    "servicePrice": "السعر",
+    "serviceDuration": "المدة (دقائق)",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "bookingAdvanced": {
+    "availableSlots": "المواعيد المتاحة",
+    "booked": "محجوز",
+    "available": "متاح",
+    "phoneWarning": "⚠️ هذا الرقم محجوز بالفعل في",
+    "previousBooking": "الحجز السابق",
+    "smartSelection": "اختيار تلقائي للموعد الأقرب",
+    "selectFromGrid": "اختر من الجدول أعلاه",
+    "viewBooking": "عرض التفاصيل"
+  }
+}

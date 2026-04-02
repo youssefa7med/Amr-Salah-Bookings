@@ -68,9 +68,6 @@ export default function Header({ isStaff, onLogout }: HeaderProps) {
                 <Link to="/queue" className={navLinkClass('/queue')}>
                   🎯 الطابور
                 </Link>
-                <Link to="/dashboard" className={navLinkClass('/dashboard')}>
-                  📊 {t('header.dashboard')}
-                </Link>
                 <Link to="/staff-management" className={navLinkClass('/staff-management')}>
                   👥 الموظفين
                 </Link>
@@ -141,13 +138,6 @@ export default function Header({ isStaff, onLogout }: HeaderProps) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 🎯 الطابور
-              </Link>
-              <Link
-                to="/dashboard"
-                className={`${navLinkClass('/dashboard')} text-center text-sm`}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                📊 لوحة التحكم
               </Link>
               <Link
                 to="/staff-management"

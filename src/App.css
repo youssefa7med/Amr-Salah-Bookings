@@ -1,0 +1,44 @@
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.booking-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.booking-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.booking-step {
+  padding: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.booking-step:last-child {
+  border-bottom: none;
+}
+
+.booking-error {
+  background: #fee;
+  border-left: 4px solid #f44;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.booking-success {
+  background: #efe;
+  border-left: 4px solid #4f4;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}

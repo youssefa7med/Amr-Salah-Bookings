@@ -3,6 +3,9 @@ import { Menu, X } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 
+// Amr Salah Barber Shop - Header Component
+// Branding: Amr Salah (عمرو صلاح)
+
 interface HeaderProps {
   isStaff: boolean
   onLogout: () => void

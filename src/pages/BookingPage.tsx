@@ -214,12 +214,14 @@ export default function BookingPage() {
 
           if (!error && data) {
             // Normalize all times to HH:MM format
+            // booking_time is TIME type (HH:MM:SS format), extract HH:MM only
             const booked = (data || [])
               .map((b: any) => {
-                const time = new Date(b.booking_time).toLocaleTimeString('en-US', { hour12: false })
-                return time.substring(0, 5) // HH:MM format
+                // booking_time is already in HH:MM:SS format, just extract HH:MM
+                const timeStr = b.booking_time || ''
+                return timeStr.substring(0, 5) // Extract HH:MM
               })
-              .filter((t: string) => t.length > 0)
+              .filter((t: string) => t.length === 5) // Must be HH:MM format
               // Remove duplicates
               .filter((t: string, index: number, arr: string[]) => arr.indexOf(t) === index)
             
@@ -293,7 +295,28 @@ export default function BookingPage() {
         refreshData()
       }, 3000)
 
-      return () => clearInterval(refreshInterval)
+      // Also subscribe to real-time changes from main app
+      const subscription = supabase
+        .channel(`bookings-${selectedBarber}-${selectedDate}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'bookings',
+            filter: `barber_id=eq.${selectedBarber},booking_date=eq.${selectedDate},status=in.(pending,confirmed)`,
+          },
+          (payload) => {
+            console.log('Real-time booking change detected:', payload.eventType)
+            refreshData()
+          }
+        )
+        .subscribe()
+
+      return () => {
+        clearInterval(refreshInterval)
+        subscription.unsubscribe()
+      }
     }
     return undefined
   }, [selectedBarber, selectedDate])

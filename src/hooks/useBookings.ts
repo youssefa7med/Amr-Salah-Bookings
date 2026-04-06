@@ -64,23 +64,21 @@ export const useBookings = () => {
         .lte('booking_time', `${bookingDate}T23:59:59`)
         .in('status', ['pending', 'confirmed'])
 
-      // Business hours: 9 AM to 8 PM
+      // Business hours: 9 AM to 8 PM, 1-hour slots
       const slots = []
       for (let hour = 9; hour < 20; hour++) {
-        for (let minute = 0; minute < 60; minute += 30) {
-          const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
-          const slotTime = new Date(`${bookingDate}T${timeStr}:00`).getTime()
+        const timeStr = `${String(hour).padStart(2, '0')}:00`
+        const slotTime = new Date(`${bookingDate}T${timeStr}:00`).getTime()
 
-          // Check if slot is available
-          const isBooked = bookings?.some(b => {
-            const bookingStart = new Date(b.booking_time).getTime()
-            const bookingEnd = bookingStart + (b.duration || 30) * 60000
-            return slotTime >= bookingStart && slotTime < bookingEnd
-          })
+        // Check if slot is available (1-hour duration)
+        const isBooked = bookings?.some(b => {
+          const bookingStart = new Date(b.booking_time).getTime()
+          const bookingEnd = bookingStart + (b.duration || 60) * 60000
+          return slotTime >= bookingStart && slotTime < bookingEnd
+        })
 
-          if (!isBooked) {
-            slots.push(timeStr)
-          }
+        if (!isBooked) {
+          slots.push(timeStr)
         }
       }
 

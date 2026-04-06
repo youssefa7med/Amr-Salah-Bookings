@@ -5,12 +5,10 @@ import toast from 'react-hot-toast'
 import { AlertCircle, Clock, CheckCircle2 } from 'lucide-react'
 import { formatTime12Hour, formatTime12HourArabic } from '@/utils/formatTime'
 
-// Fixed time slots - 30 minute intervals (9 AM to 6 PM)
+// Fixed time slots - 1 hour intervals (9 AM to 6 PM)
 const TIME_SLOTS = [
-  '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '12:30', '13:00', '13:30',
-  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-  '17:00', '17:30', '18:00',
+  '09:00', '10:00', '11:00', '12:00', '13:00',
+  '14:00', '15:00', '16:00', '17:00', '18:00',
 ]
 
 interface WorkingHours {

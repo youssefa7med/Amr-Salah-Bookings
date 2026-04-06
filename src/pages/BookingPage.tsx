@@ -187,7 +187,7 @@ export default function BookingPage() {
     try {
       const [barbersRes, servicesRes] = await Promise.all([
         supabase.from('barbers').select('*'),
-        supabase.from('services').select('*'),
+        supabase.from('services').select('id, name, name_ar, price, duration, active'),
       ])
 
       if (barbersRes.error) throw barbersRes.error
@@ -197,7 +197,22 @@ export default function BookingPage() {
       console.log('✅ Fetched services:', servicesRes.data)
 
       setBarbers(barbersRes.data || [])
-      setServices(servicesRes.data || [])
+      
+      // Map services data to match Service interface
+      const mappedServices = (servicesRes.data || []).map((s: any) => ({
+        id: s.id,
+        name_ar: s.name_ar || 'خدمة',
+        name_en: s.name || 'Service',
+        namear: s.name_ar,  // Fallback for camelCase
+        nameen: s.name,     // Fallback for camelCase
+        price: s.price || 0,
+        duration_minutes: s.duration || 30,
+        category: 'general',
+        is_active: s.active !== false,  // Default to true
+      })) as Service[]
+      
+      console.log('✅ Mapped services:', mappedServices)
+      setServices(mappedServices)
 
       // Auto-select first barber and first service
       if (barbersRes.data && barbersRes.data.length > 0) {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase, Booking } from '@/db/supabase'
 import toast from 'react-hot-toast'
-import { Check, X, Clock, Phone } from 'lucide-react'
+import { Check, X, Clock } from 'lucide-react'
 
 // Format date to Arabic format
 const formatDateArabic = (dateStr: string) => {
@@ -14,7 +14,6 @@ const formatDateArabic = (dateStr: string) => {
 export default function QueuePage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [barbers, setBarbers] = useState<{ [key: string]: string }>({})
-  const [services, setServices] = useState<{ [key: string]: any }>({})
   const [loading, setLoading] = useState(true)
   const [refreshTime, setRefreshTime] = useState(14)
   const [incompleteBookings, setIncompleteBookings] = useState<number>(0)
@@ -54,21 +53,24 @@ export default function QueuePage() {
   const fetchData = async () => {
     try {
       const today = new Date().toISOString().split('T')[0]
+      const todayStart = new Date(today).getTime()
+      const todayEnd = todayStart + 86400000
 
       // Fetch today's pending bookings sorted by time
       const { data: bookingsData, error: bookingsError } = await supabase
         .from('bookings')
         .select('*')
-        .eq('booking_date', today)
+        .gte('bookingTime', new Date(todayStart).toISOString())
+        .lt('bookingTime', new Date(todayEnd).toISOString())
         .neq('status', 'cancelled')
         .neq('status', 'completed')
-        .order('booking_time', { ascending: true })
+        .order('bookingTime', { ascending: true })
 
       if (bookingsError) throw bookingsError
 
-      // Count incomplete bookings
+      // Count incomplete bookings (only check for barber, service_id no longer exists)
       const incomplete = (bookingsData || []).filter(
-        b => !b.barber_id || b.barber_id === '' || !b.service_id || b.service_id === ''
+        b => !b.barberId || b.barberId === ''
       ).length
       setIncompleteBookings(incomplete)
 
@@ -79,26 +81,13 @@ export default function QueuePage() {
 
       if (barbersError) throw barbersError
 
-      // Fetch services for mapping
-      const { data: servicesData, error: servicesError } = await supabase
-        .from('services')
-        .select('id, name_ar, price, duration_minutes')
-
-      if (servicesError) throw servicesError
-
       const barbersMap: { [key: string]: string } = {}
       ;(barbersData || []).forEach((b: any) => {
         barbersMap[b.id] = b.name
       })
 
-      const servicesMap: { [key: string]: any } = {}
-      ;(servicesData || []).forEach((s: any) => {
-        servicesMap[s.id] = s
-      })
-
       setBookings(bookingsData || [])
       setBarbers(barbersMap)
-      setServices(servicesMap)
     } catch (err: any) {
       console.error('Error fetching queue:', err)
       toast.error('خطأ في تحميل الطابور')
@@ -166,7 +155,7 @@ export default function QueuePage() {
               <div className="bg-red-500/20 border border-red-500 rounded-lg p-4 mb-8 flex gap-3">
                 <div className="text-red-300 font-semibold">⚠️ تحذير</div>
                 <div className="text-red-200 text-sm">
-                  يوجد <strong>{incompleteBookings}</strong> حجز {incompleteBookings === 1 ? 'بيانات ناقصة' : 'بيانات ناقصة'} (بدون حلاق أو خدمة). 
+                  يوجد <strong>{incompleteBookings}</strong> حجز {incompleteBookings === 1 ? 'بدون حلاق محدد' : 'بيانات ناقصة'} (بدون حلاق). 
                   يرجى تصحيح البيانات مباشرة من قاعدة البيانات.
                 </div>
               </div>
@@ -178,53 +167,43 @@ export default function QueuePage() {
             <div className="bg-gradient-to-br from-gold-500 to-gold-600 rounded-xl md:rounded-2xl p-6 md:p-12 mb-8 md:mb-12 shadow-2xl border-2 border-gold-400">
               <div className="text-center">
                 <p className="text-gold-100 text-sm md:text-lg mb-3">العميل الحالي</p>
-                <h2 className="text-white text-4xl md:text-6xl font-bold mb-6 break-words">{currentBooking.customer_name}</h2>
+                <h2 className="text-white text-4xl md:text-6xl font-bold mb-6 break-words">{barbers[currentBooking.barberId] || 'قيد المراجعة'}</h2>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
-                    <p className="text-gold-100 text-xs md:text-sm mb-1">الهاتف</p>
+                    <p className="text-gold-100 text-xs md:text-sm mb-1">الحجز ID</p>
                     <div className="flex items-center justify-center gap-1 md:gap-2 text-white font-semibold text-xs md:text-lg">
-                      <Phone size={16} className="hidden md:block" />
-                      <span className="text-xs md:text-base">{currentBooking.customer_phone}</span>
+                      <span className="text-xs md:text-base truncate">{currentBooking.id}</span>
                     </div>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">التاريخ</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{formatDateArabic(currentBooking.booking_date)}</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">{formatDateArabic(new Date(currentBooking.bookingTime).toISOString().split('T')[0])}</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">الوقت</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{currentBooking.booking_time}</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">{new Date(currentBooking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">الحلاق</p>
                     <p className="text-white font-semibold text-xs md:text-lg truncate">
-                      {barbers[currentBooking.barber_id] 
-                        ? barbers[currentBooking.barber_id] 
-                        : currentBooking.barber_id ? '⚠️ غير موجود' : '❌ لم يتم التحديد'}
-                    </p>
-                  </div>
-
-                  <div className="bg-white/20 rounded-lg p-2 md:p-4">
-                    <p className="text-gold-100 text-xs md:text-sm mb-1">الخدمة</p>
-                    <p className="text-white font-semibold text-xs md:text-lg truncate">
-                      {services[currentBooking.service_id]?.name_ar 
-                        ? services[currentBooking.service_id]?.name_ar 
-                        : currentBooking.service_id ? '⚠️ غير موجودة' : '❌ لم يتم التحديد'}
+                      {barbers[currentBooking.barberId] 
+                        ? barbers[currentBooking.barberId] 
+                        : currentBooking.barberId ? '⚠️ غير موجود' : '❌ لم يتم التحديد'}
                     </p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">المدة</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{services[currentBooking.service_id]?.duration_minutes || '-'} دقيقة</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">{currentBooking.duration || '-'} دقيقة</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
-                    <p className="text-gold-100 text-xs md:text-sm mb-1">السعر</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{services[currentBooking.service_id]?.price || '-'} ج.م</p>
+                    <p className="text-gold-100 text-xs md:text-sm mb-1">الحالة</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">{currentBooking.status}</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
@@ -272,41 +251,32 @@ export default function QueuePage() {
                         <div className="text-xl md:text-3xl font-bold text-gold-500 w-8 md:w-12 text-center flex-shrink-0">{index + 2}</div>
 
                         <div className="flex-1 min-w-0">
-                          <p className="text-white font-semibold text-sm md:text-lg truncate">{booking.customer_name}</p>
+                          <p className="text-white font-semibold text-sm md:text-lg truncate">{barbers[booking.barberId] || 'قيد التحديد'}</p>
                           <div className="flex flex-wrap items-center gap-1 md:gap-2 text-slate-300 text-xs md:text-sm mt-1">
                             <span className="flex items-center gap-1 flex-shrink-0">
-                              📅 {formatDateArabic(booking.booking_date)}
+                              📅 {formatDateArabic(new Date(booking.bookingTime).toISOString().split('T')[0])}
                             </span>
                             <span className="hidden md:flex items-center gap-1">•</span>
                           </div>
                           <div className="flex flex-wrap items-center gap-1 md:gap-2 text-slate-300 text-xs md:text-sm">
                             <span className="flex items-center gap-1 flex-shrink-0">
-                              <Phone size={14} />
-                              <span className="truncate">{booking.customer_phone}</span>
-                            </span>
-                            <span className="flex items-center gap-1 flex-shrink-0">
                               <Clock size={14} />
-                              {booking.booking_time}
+                              {new Date(booking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}
                             </span>
                             <span className="truncate">
-                              ⚡ {barbers[booking.barber_id] 
-                                ? barbers[booking.barber_id] 
-                                : booking.barber_id ? '⚠️ غير موجود' : '❌ بلا حلاق'}
+                              ⚡ {barbers[booking.barberId] 
+                                ? barbers[booking.barberId] 
+                                : booking.barberId ? '⚠️ غير موجود' : '❌ بلا حلاق'}
                             </span>
                             <span className="truncate">
-                              🛠️ {services[booking.service_id]?.name_ar 
-                                ? services[booking.service_id]?.name_ar 
-                                : booking.service_id ? '⚠️ غير موجودة' : '❌ بلا خدمة'}
+                              ⏱️ {booking.duration || '-'} دقيقة
                             </span>
-                            {services[booking.service_id]?.price && (
-                              <span className="truncate">💰 {services[booking.service_id]?.price} ج.م</span>
-                            )}
                           </div>
                         </div>
                       </div>
 
                       <div className="text-slate-400 text-xs md:text-sm hidden md:block flex-shrink-0">
-                        {booking.booking_date}
+                        {new Date(booking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}
                       </div>
                     </div>
                   ))}

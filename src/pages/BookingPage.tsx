@@ -203,31 +203,26 @@ export default function BookingPage() {
       const refreshData = async () => {
         console.log(`🔄 Fetching bookings for barber ${selectedBarber} on ${selectedDate}`)
         
-        // Helper function to normalize time format
-        const normalizeTime = (time: any): string => {
-          if (!time) return ''
-          const timeStr = String(time).trim()
-          // Handle both "HH:MM:SS" and "HH:MM" formats
-          const parts = timeStr.split(':')
-          if (parts.length >= 2) {
-            return `${parts[0]}:${parts[1]}` // Return only HH:MM
-          }
-          return timeStr
-        }
-        
         // Get booked slots
         try {
+          const startOfDay = `${selectedDate}T00:00:00`
+          const endOfDay = `${selectedDate}T23:59:59`
+          
           const { data, error } = await supabase
             .from('bookings')
-            .select('booking_time')
-            .eq('barber_id', selectedBarber)
-            .eq('booking_date', selectedDate)
+            .select('bookingTime')
+            .eq('barberId', selectedBarber)
+            .gte('bookingTime', startOfDay)
+            .lte('bookingTime', endOfDay)
             .in('status', ['pending', 'confirmed'])
 
           if (!error && data) {
             // Normalize all times to HH:MM format
             const booked = (data || [])
-              .map((b: any) => normalizeTime(b.booking_time))
+              .map((b: any) => {
+                const time = new Date(b.bookingTime).toLocaleTimeString('en-US', { hour12: false })
+                return time.substring(0, 5) // HH:MM format
+              })
               .filter((t: string) => t.length > 0)
               // Remove duplicates
               .filter((t: string, index: number, arr: string[]) => arr.indexOf(t) === index)
@@ -310,12 +305,15 @@ export default function BookingPage() {
   const checkExistingBooking = async () => {
     try {
       const normalizedPhone = normalizePhone(customerPhone)
+      const startOfDay = `${selectedDate}T00:00:00`
+      const endOfDay = `${selectedDate}T23:59:59`
       
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
-        .eq('customer_phone', normalizedPhone)
-        .eq('booking_date', selectedDate)
+        .eq('clientPhone', normalizedPhone)
+        .gte('bookingTime', startOfDay)
+        .lte('bookingTime', endOfDay)
         .neq('status', 'cancelled')
         .limit(1)
 
@@ -472,12 +470,12 @@ export default function BookingPage() {
     setIsConfirming(true)
     try {
       // FINAL CHECK: Make sure no one else booked this slot in the meantime
+      const bookingDateTime = `${pendingBooking.booking_date}T${pendingBooking.booking_time}:00`
       const { data: conflictCheck, error: conflictError } = await supabase
         .from('bookings')
         .select('id')
-        .eq('barber_id', pendingBooking.barber_id)
-        .eq('booking_date', pendingBooking.booking_date)
-        .eq('booking_time', pendingBooking.booking_time)
+        .eq('barberId', pendingBooking.barber_id)
+        .eq('bookingTime', bookingDateTime)
         .in('status', ['pending', 'confirmed'])
         .limit(1)
 
@@ -496,12 +494,8 @@ export default function BookingPage() {
 
       // Extract only the fields that exist in the bookings table
       const bookingData = {
-        barber_id: pendingBooking.barber_id,
-        service_id: pendingBooking.service_id,
-        customer_name: pendingBooking.customer_name,
-        customer_phone: pendingBooking.customer_phone,
-        booking_date: pendingBooking.booking_date,
-        booking_time: pendingBooking.booking_time,
+        barberId: pendingBooking.barber_id,
+        bookingTime: `${pendingBooking.booking_date}T${pendingBooking.booking_time}:00`,
         status: pendingBooking.status,
         notes: pendingBooking.notes,
       }
@@ -714,9 +708,9 @@ export default function BookingPage() {
               <div className="text-amber-100 text-sm">
                 <p className="font-semibold mb-1">{t('bookingAdvanced.phoneWarning')}</p>
                 <p>
-                  <strong>{existingBooking.booking_date}</strong> في الساعة <strong>{formatTime12HourArabic(existingBooking.booking_time)}</strong>
+                  <strong>{new Date(existingBooking.bookingTime).toLocaleDateString('ar-EG')}</strong> في الساعة <strong>{formatTime12HourArabic(new Date(existingBooking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</strong>
                 </p>
-                <p className="text-xs text-amber-200 mt-2">الحجز باسم: {existingBooking.customer_name}</p>
+                <p className="text-xs text-amber-200 mt-2">تم حفظ الحجز مسبقاً</p>
               </div>
             </div>
           )}

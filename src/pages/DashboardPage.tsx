@@ -24,14 +24,18 @@ export default function DashboardPage() {
         .from('bookings')
         .select(`
           *,
-          barbers!barber_id(id, name, phone, email),
-          services!service_id(id, name_ar, name_en, price, duration_minutes)
+          barbers!barberId(id, name, phone, email)
         `)
-        .order('booking_date', { ascending: false })
+        .order('bookingTime', { ascending: false })
 
       if (filter === 'today') {
         const today = new Date().toISOString().split('T')[0]
-        query = query.eq('booking_date', today)
+        // Filter by date extracted from bookingTime
+        const todayStart = new Date(today).getTime()
+        const todayEnd = todayStart + 86400000
+        query = query
+          .gte('bookingTime', new Date(todayStart).toISOString())
+          .lt('bookingTime', new Date(todayEnd).toISOString())
       }
 
       const { data, error } = await query
@@ -47,21 +51,17 @@ export default function DashboardPage() {
         (data || []).map((b: any) => {
           // Handle both array form (barbers[0]) and object form
           const barberData = Array.isArray(b.barbers) ? b.barbers[0] : b.barbers
-          const serviceData = Array.isArray(b.services) ? b.services[0] : b.services
           
           console.log(`📦 Booking ${b.id}:`, {
             barber_id: b.barber_id,
             barbers: b.barbers,
             barberData,
-            service_id: b.service_id,
-            services: b.services,
-            serviceData,
+            bookingTime: b.bookingTime,
           })
           
           return {
             ...b,
             barber: barberData,
-            service: serviceData,
           }
         })
       )
@@ -140,8 +140,8 @@ export default function DashboardPage() {
               <div key={booking.id} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg p-4 md:p-6 w-full">
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0 mb-4">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base md:text-lg font-bold text-white truncate">{booking.customer_name}</h3>
-                    <p className="text-slate-400 text-sm truncate">{booking.customer_phone}</p>
+                    <h3 className="text-base md:text-lg font-bold text-white truncate">{booking.barber?.name || 'قيد المراجعة'}</h3>
+                    <p className="text-slate-400 text-sm truncate">{booking.id}</p>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-xs md:text-sm font-medium border flex-shrink-0 ${getStatusColor(booking.status)}`}>
                     {t(`booking_status.${booking.status}`)}
@@ -153,15 +153,15 @@ export default function DashboardPage() {
                     <strong className="text-slate-200 block md:inline">الحلاق: </strong><span className="text-white font-semibold">{booking.barber?.name || '—'}</span>
                   </p>
                   <p className="text-slate-300 py-2">
-                    <strong className="text-slate-200 block md:inline">الخدمة: </strong><span className="text-white font-semibold">{booking.service?.name_ar || '—'}</span>
+                    <strong className="text-slate-200 block md:inline">المدة: </strong><span className="text-white font-semibold">{booking.duration || '--'} دقيقة</span>
                   </p>
                   <p className="text-slate-300 py-2">
-                    <strong className="text-slate-200 block md:inline">الموعد: </strong><span className="text-gold-400 font-semibold">{formatTime12HourArabic(booking.booking_time || '')}</span>
+                    <strong className="text-slate-200 block md:inline">الموعد: </strong><span className="text-gold-400 font-semibold">{formatTime12HourArabic(new Date(booking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</span>
                   </p>
                   <p className="text-slate-300 py-2">
                     <strong className="text-slate-200 block md:inline">التاريخ: </strong>
                     <span className="text-white font-semibold text-xs md:text-sm">
-                      {format(new Date(booking.booking_date), 'EEEE، d MMMM yyyy', {
+                      {format(new Date(booking.bookingTime), 'EEEE، d MMMM yyyy', {
                         locale: i18n.language === 'ar' ? ar : undefined,
                       })}
                     </span>

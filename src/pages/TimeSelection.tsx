@@ -11,13 +11,16 @@ interface TimeSelectionProps {
 
 export default function TimeSelection({ barberId, date, onSelectTime }: TimeSelectionProps) {
   const { t } = useTranslation()
-  const { getAvailableSlots, loading } = useBookings()
+  const { getAvailableSlots } = useBookings()
   const [slots, setSlots] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const fetchSlots = async () => {
+      setLoading(true)
       const available = await getAvailableSlots(barberId, date)
       setSlots(available)
+      setLoading(false)
     }
     fetchSlots()
   }, [barberId, date, getAvailableSlots])

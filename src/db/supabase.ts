@@ -38,16 +38,13 @@ export interface Service {
 
 export interface Booking {
   id: string
-  barber_id: string
-  service_id: string
-  customer_name: string
-  customer_phone: string
-  booking_date: string
-  booking_time: string
+  barberId: string
+  bookingTime: string
+  duration?: number
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
   notes?: string
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface WorkingHours {

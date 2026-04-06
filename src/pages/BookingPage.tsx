@@ -391,6 +391,13 @@ export default function BookingPage() {
     // Show confirmation modal instead of submitting directly
     const normalizedPhone = normalizePhone(customerPhone)
     
+    // Validate phone number is exactly 11 digits
+    const phoneDigitsOnly = normalizedPhone.replace(/\D/g, '')
+    if (phoneDigitsOnly.length !== 11) {
+      toast.error('❌ رقم الهاتف يجب أن يكون 11 رقم (مثال: 01050123456)')
+      return
+    }
+    
     // Get barber and service names - with fallback
     const barberData = barbers.find(b => b.id === selectedBarber)
     const serviceData = services.find(s => s.id === selectedService)
@@ -415,7 +422,7 @@ export default function BookingPage() {
       barber_id: selectedBarber,
       service_id: selectedService,
       barber_name: barberData?.name || selectedBarber + ' (ID)',  // Show ID if name missing
-      service_name: serviceData?.name_ar || selectedService + ' (Service)',  // Show ID if name missing
+      service_name: serviceData?.name_ar || serviceData?.namear || selectedService + ' (Service)',  // Show ID if name missing
       service_price: serviceData?.price || 0,
       service_duration: serviceData?.duration_minutes || 0,
       customer_name: customerName.trim(),
@@ -588,10 +595,10 @@ export default function BookingPage() {
               className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-gold-500 transition-colors"
               dir={isArabic ? 'rtl' : 'ltr'}
             >
-              <option value="">{t('booking.selectService')}</option>
+              <option value="">اختر الخدمة</option>
               {services.map((service) => (
                 <option key={service.id} value={service.id}>
-                  {service.name_ar} - {service.price} ج.م ({service.duration_minutes} دقيقة)
+                  {service.name_ar || service.namear} - {service.price} ج.م ({service.duration_minutes} دقيقة)
                 </option>
               ))}
             </select>

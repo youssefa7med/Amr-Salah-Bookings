@@ -26,6 +26,8 @@ export interface Service {
   id: string
   name_ar: string
   name_en: string
+  namear?: string  // Database column (fallback)
+  nameen?: string  // Database column (fallback)
   description_ar?: string
   description_en?: string
   price: number

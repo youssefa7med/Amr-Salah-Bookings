@@ -115,7 +115,6 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string>('')
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
-  const [customerEmail, setCustomerEmail] = useState('')
   const [notes, setNotes] = useState('')
   
   // Confirmation modal state
@@ -157,7 +156,6 @@ export default function BookingPage() {
           setSelectedTime('')
           setCustomerName('')
           setCustomerPhone('')
-          setCustomerEmail('')
           setNotes('')
           setExistingBooking(null)
           
@@ -427,7 +425,6 @@ export default function BookingPage() {
       service_duration: serviceData?.duration_minutes || 0,
       customer_name: customerName.trim(),
       customer_phone: normalizedPhone,
-      customer_email: customerEmail?.trim() || null,
       booking_date: selectedDate,
       booking_time: normalizeTimeHelper(selectedTime), // Normalize to HH:MM format
       status: 'pending',
@@ -751,18 +748,7 @@ export default function BookingPage() {
             </div>
           </div>
 
-          {/* Email & Notes */}
-          <div>
-            <label className="block text-sm font-medium text-slate-200 mb-2">{t('booking.yourEmail')}</label>
-            <input
-              type="email"
-              value={customerEmail}
-              onChange={(e) => setCustomerEmail(e.target.value)}
-              placeholder={t('booking.yourEmail')}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-gold-500 transition-colors"
-            />
-          </div>
-
+          {/* Notes */}
           <div>
             <label className="block text-sm font-medium text-slate-200 mb-2">{t('booking.notes')}</label>
             <textarea

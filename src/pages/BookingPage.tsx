@@ -205,15 +205,11 @@ export default function BookingPage() {
         
         // Get booked slots
         try {
-          const startOfDay = `${selectedDate}T00:00:00`
-          const endOfDay = `${selectedDate}T23:59:59`
-          
           const { data, error } = await supabase
             .from('bookings')
             .select('booking_time')
             .eq('barber_id', selectedBarber)
-            .gte('booking_time', startOfDay)
-            .lte('booking_time', endOfDay)
+            .eq('booking_date', selectedDate)
             .in('status', ['pending', 'confirmed'])
 
           if (!error && data) {
@@ -305,15 +301,12 @@ export default function BookingPage() {
   const checkExistingBooking = async () => {
     try {
       const normalizedPhone = normalizePhone(customerPhone)
-      const startOfDay = `${selectedDate}T00:00:00`
-      const endOfDay = `${selectedDate}T23:59:59`
       
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
         .eq('client_phone', normalizedPhone)
-        .gte('booking_time', startOfDay)
-        .lte('booking_time', endOfDay)
+        .eq('booking_date', selectedDate)
         .neq('status', 'cancelled')
         .limit(1)
 
@@ -470,12 +463,12 @@ export default function BookingPage() {
     setIsConfirming(true)
     try {
       // FINAL CHECK: Make sure no one else booked this slot in the meantime
-      const bookingDateTime = `${pendingBooking.booking_date}T${pendingBooking.booking_time}:00`
       const { data: conflictCheck, error: conflictError } = await supabase
         .from('bookings')
         .select('id')
         .eq('barber_id', pendingBooking.barber_id)
-        .eq('booking_time', bookingDateTime)
+        .eq('booking_date', pendingBooking.booking_date)
+        .eq('booking_time', pendingBooking.booking_time)
         .in('status', ['pending', 'confirmed'])
         .limit(1)
 

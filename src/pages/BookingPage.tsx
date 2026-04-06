@@ -452,8 +452,9 @@ export default function BookingPage() {
     console.log('🔍 Available Barbers:', barbers.map(b => ({ id: b.id, name: b.name })))
     console.log('🔍 Matched Barber Data:', barberData)
     console.log('🔍 Selected Service ID:', selectedService)
-    console.log('🔍 Available Services:', services.map(s => ({ id: s.id, nameAr: (s as any).nameAr, name_ar: (s as any).name_ar })))
+    console.log('🔍 Available Services:', services.map(s => ({ id: s.id, nameAr: (s as any).nameAr, name_ar: (s as any).name_ar, name: (s as any).name })))
     console.log('🔍 Matched Service Data:', serviceData)
+    console.log('🔍 Service Data Keys:', serviceData ? Object.keys(serviceData) : 'null')
     
     // Normalize the selected time to HH:MM format
     const normalizeTimeHelper = (time: string): string => {
@@ -464,11 +465,18 @@ export default function BookingPage() {
       return time
     }
     
+    // Get service name with multiple fallbacks
+    let serviceName = 'خدمة عامة'
+    if (serviceData) {
+      serviceName = (serviceData as any).nameAr || (serviceData as any).name_ar || (serviceData as any).name || (serviceData as any).namear || 'خدمة عامة'
+    }
+    console.log('✅ Final service name:', serviceName)
+    
     const booking = {
       barber_id: selectedBarber,
       service_id: selectedService,
       barber_name: barberData?.name || selectedBarber + ' (ID)',  // Show ID if name missing
-      service_name: (serviceData as any)?.nameAr || (serviceData as any)?.name_ar || (serviceData as any)?.name || selectedService + ' (Service)',  // Try multiple name fields
+      service_name: serviceName,
       service_price: (serviceData as any)?.price || 0,
       service_duration: (serviceData as any)?.duration_minutes || (serviceData as any)?.duration || 0,
       customer_name: customerName.trim(),
@@ -567,20 +575,16 @@ export default function BookingPage() {
         clientId = existingClients[0].id
         console.log('✅ Found existing client:', clientId)
       } else {
-        // Create new client with complete data
+        // Create new client with only available fields
         const { data: newClient, error: createClientError } = await supabase
           .from('clients')
           .insert({
             name: pendingBooking.customer_name.trim(),
             phone: pendingBooking.customer_phone,
             email: null,
-            birth_date: null,
-            notes: pendingBooking.notes?.trim() || null,
-            total_visits: 0,  // First booking
-            total_spent: 0,   // No purchases yet
-            vip: false,       // Not VIP by default
-            last_visit: null,
-            shop_id: null,    // Will be added if multi-shop later
+            total_visits: 0,
+            total_spent: 0,
+            vip: false,
           })
           .select('id')
           .single()

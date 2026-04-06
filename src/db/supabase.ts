@@ -39,10 +39,15 @@ export interface Service {
 export interface Booking {
   id: string
   barber_id: string
+  barber_name?: string
   client_name: string
   client_phone: string
-  booking_date: string
-  booking_time: string
+  booking_date: string // YYYY-MM-DD
+  booking_time: string // HH:MM
+  service_id?: string
+  service_name?: string
+  service_price?: number
+  service_duration?: number
   status: 'pending' | 'confirmed' | 'completed' | 'rejected' | 'cancelled'
   notes?: string
   created_at: string

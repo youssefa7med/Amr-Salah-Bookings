@@ -542,15 +542,18 @@ export default function BookingPage() {
         return
       }
 
-      // Extract only the fields that exist in the bookings table
+      // Extract all required fields for the bookings table
       const bookingData = {
         barber_id: pendingBooking.barber_id,
+        barber_name: pendingBooking.barber_name, // Save barber name for display
         service_id: pendingBooking.service_id,
+        service_name: pendingBooking.service_name, // Save service name for display
         client_name: pendingBooking.customer_name,
         client_phone: pendingBooking.customer_phone,
         booking_date: pendingBooking.booking_date,
         booking_time: pendingBooking.booking_time,
         status: pendingBooking.status,
+        queue_number: 0, // Will be calculated by Main App
         notes: pendingBooking.notes,
       }
 

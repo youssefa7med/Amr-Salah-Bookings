@@ -542,8 +542,54 @@ export default function BookingPage() {
         return
       }
 
-      // Extract all required fields for the bookings table
+      // Step 1: Create or find client
+      console.log('👤 Creating/finding client...', {
+        name: pendingBooking.customer_name,
+        phone: pendingBooking.customer_phone,
+      })
+
+      // Check if client with this phone exists
+      const { data: existingClients, error: clientSearchError } = await supabase
+        .from('clients')
+        .select('id')
+        .eq('phone', pendingBooking.customer_phone)
+        .limit(1)
+
+      if (clientSearchError) {
+        console.error('Error searching for client:', clientSearchError)
+        throw clientSearchError
+      }
+
+      let clientId: string
+
+      if (existingClients && existingClients.length > 0) {
+        // Client exists, use their ID
+        clientId = existingClients[0].id
+        console.log('✅ Found existing client:', clientId)
+      } else {
+        // Create new client
+        const { data: newClient, error: createClientError } = await supabase
+          .from('clients')
+          .insert({
+            name: pendingBooking.customer_name.trim(),
+            phone: pendingBooking.customer_phone,
+            status: 'active',
+          })
+          .select('id')
+          .single()
+
+        if (createClientError) {
+          console.error('Error creating client:', createClientError)
+          throw createClientError
+        }
+
+        clientId = newClient.id
+        console.log('✅ Created new client:', clientId)
+      }
+
+      // Step 2: Create booking with client_id
       const bookingData = {
+        client_id: clientId, // Link booking to client
         barber_id: pendingBooking.barber_id,
         barber_name: pendingBooking.barber_name, // Save barber name for display
         service_id: pendingBooking.service_id,

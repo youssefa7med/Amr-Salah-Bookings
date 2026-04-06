@@ -452,7 +452,7 @@ export default function BookingPage() {
     console.log('🔍 Available Barbers:', barbers.map(b => ({ id: b.id, name: b.name })))
     console.log('🔍 Matched Barber Data:', barberData)
     console.log('🔍 Selected Service ID:', selectedService)
-    console.log('🔍 Available Services:', services.map(s => ({ id: s.id, name_ar: s.name_ar })))
+    console.log('🔍 Available Services:', services.map(s => ({ id: s.id, nameAr: (s as any).nameAr, name_ar: (s as any).name_ar })))
     console.log('🔍 Matched Service Data:', serviceData)
     
     // Normalize the selected time to HH:MM format
@@ -468,9 +468,9 @@ export default function BookingPage() {
       barber_id: selectedBarber,
       service_id: selectedService,
       barber_name: barberData?.name || selectedBarber + ' (ID)',  // Show ID if name missing
-      service_name: serviceData?.name_ar || serviceData?.namear || selectedService + ' (Service)',  // Show ID if name missing
-      service_price: serviceData?.price || 0,
-      service_duration: serviceData?.duration_minutes || 0,
+      service_name: (serviceData as any)?.nameAr || (serviceData as any)?.name_ar || (serviceData as any)?.name || selectedService + ' (Service)',  // Try multiple name fields
+      service_price: (serviceData as any)?.price || 0,
+      service_duration: (serviceData as any)?.duration_minutes || (serviceData as any)?.duration || 0,
       customer_name: customerName.trim(),
       customer_phone: normalizedPhone,
       booking_date: selectedDate,

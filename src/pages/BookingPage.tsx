@@ -375,6 +375,22 @@ export default function BookingPage() {
       return
     }
 
+    // Check if booking date is within next 7 days (Egypt timezone)
+    try {
+      const egyptNow = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Cairo' })
+      const selectedDateObj = new Date(selectedDate + 'T00:00:00')
+      const egyptTodayObj = new Date(egyptNow + 'T00:00:00')
+      const sevenDaysLater = new Date(egyptTodayObj)
+      sevenDaysLater.setDate(sevenDaysLater.getDate() + 7)
+      
+      if (selectedDateObj > sevenDaysLater) {
+        toast.error('❌ يمكنك الحجز فقط لمدة أسبوع قدماً كحد أقصى')
+        return
+      }
+    } catch (err) {
+      console.error('Error checking date range:', err)
+    }
+
     // Check if time is in the past
     if (isPastTime(selectedTime, selectedDate)) {
       toast.error('❌ لا يمكن الحجز في وقت مضى - اختر وقت في المستقبل')
@@ -909,8 +925,17 @@ export default function BookingPage() {
                   </div>
 
                   {/* Success Message */}
-                  <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-3">تم التأكيد! 🎉</h3>
-                  <p className="text-lg md:text-xl text-slate-300 mb-2">حجزك تم بنجاح</p>
+                  <h3 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-3">تم الحجز بنجاح! 🎉</h3>
+                  <p className="text-lg md:text-xl text-slate-300 mb-4">حجزك في الانتظار - يرجى أخذ لقطة شاشة</p>
+                  <div className="bg-amber-500/20 border-2 border-amber-500 rounded-lg p-4 md:p-6 mb-6 max-w-md w-full">
+                    <p className="text-amber-300 text-sm md:text-base font-semibold">⚠️ هام جداً</p>
+                    <p className="text-amber-100 text-xs md:text-sm mt-2">
+                      يرجى أخذ <strong>لقطة شاشة (Screenshot)</strong> لهذه الرسالة كإثبات للحجز قبل الإغلاق
+                    </p>
+                    <p className="text-amber-200 text-xs mt-2">
+                      سيتم التحقق من الحجز من قبل صاحب المحل خلال 24 ساعة
+                    </p>
+                  </div>
                   <p className="text-sm md:text-base text-slate-400">سنتواصل معك على الرقم {pendingBooking?.customer_phone}</p>
 
                   {/* Booking Summary */}
@@ -935,6 +960,35 @@ export default function BookingPage() {
                       <p className="text-slate-200">
                         <span className="text-slate-400">رقم الهاتف:</span> {pendingBooking?.customer_phone}
                       </p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="mt-4 flex gap-2 md:gap-3">
+                      <button
+                        onClick={() => {
+                          const referenceText = `الحجز: ${pendingBooking?.barber_name} - ${pendingBooking?.service_name} - ${formatDateArabic(pendingBooking?.booking_date || '')} - ${formatTime12HourArabic(pendingBooking?.booking_time || '')}`
+                          navigator.clipboard.writeText(referenceText)
+                          toast.success('✅ تم نسخ بيانات الحجز')
+                        }}
+                        className="flex-1 px-3 py-2 bg-blue-500/30 hover:bg-blue-500/50 border border-blue-500 text-blue-300 rounded-lg text-xs font-semibold transition-colors"
+                      >
+                        📋 نسخ البيانات
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator.share({
+                              title: 'حجزي في المحل',
+                              text: `الخدمة: ${pendingBooking?.service_name} | الوقت: ${formatTime12HourArabic(pendingBooking?.booking_time || '')}`
+                            })
+                          } else {
+                            toast.success('حفظ الرسالة الظاهرة كصورة 📸')
+                          }
+                        }}
+                        className="flex-1 px-3 py-2 bg-purple-500/30 hover:bg-purple-500/50 border border-purple-500 text-purple-300 rounded-lg text-xs font-semibold transition-colors"
+                      >
+                        📸 مشاركة
+                      </button>
                     </div>
                   </div>
 

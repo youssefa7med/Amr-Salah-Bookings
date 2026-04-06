@@ -43,7 +43,7 @@ export interface Booking {
   client_phone: string
   booking_date: string
   booking_time: string
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  status: 'pending' | 'confirmed' | 'completed' | 'rejected' | 'cancelled'
   notes?: string
   created_at: string
   updated_at: string

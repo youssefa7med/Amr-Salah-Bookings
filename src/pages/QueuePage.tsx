@@ -167,7 +167,7 @@ export default function QueuePage() {
             <div className="bg-gradient-to-br from-gold-500 to-gold-600 rounded-xl md:rounded-2xl p-6 md:p-12 mb-8 md:mb-12 shadow-2xl border-2 border-gold-400">
               <div className="text-center">
                 <p className="text-gold-100 text-sm md:text-lg mb-3">العميل الحالي</p>
-                <h2 className="text-white text-4xl md:text-6xl font-bold mb-6 break-words">{barbers[currentBooking.barberId] || 'قيد المراجعة'}</h2>
+                <h2 className="text-white text-4xl md:text-6xl font-bold mb-6 break-words">{barbers[currentBooking.barber_id] || 'قيد المراجعة'}</h2>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
@@ -179,26 +179,26 @@ export default function QueuePage() {
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">التاريخ</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{formatDateArabic(new Date(currentBooking.bookingTime).toISOString().split('T')[0])}</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">{formatDateArabic(new Date(currentBooking.booking_time).toISOString().split('T')[0])}</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">الوقت</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{new Date(currentBooking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">{new Date(currentBooking.booking_time).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">الحلاق</p>
                     <p className="text-white font-semibold text-xs md:text-lg truncate">
-                      {barbers[currentBooking.barberId] 
-                        ? barbers[currentBooking.barberId] 
-                        : currentBooking.barberId ? '⚠️ غير موجود' : '❌ لم يتم التحديد'}
+                      {barbers[currentBooking.barber_id] 
+                        ? barbers[currentBooking.barber_id] 
+                        : currentBooking.barber_id ? '⚠️ غير موجود' : '❌ لم يتم التحديد'}
                     </p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
                     <p className="text-gold-100 text-xs md:text-sm mb-1">المدة</p>
-                    <p className="text-white font-semibold text-xs md:text-lg">{currentBooking.duration || '-'} دقيقة</p>
+                    <p className="text-white font-semibold text-xs md:text-lg">60 دقيقة</p>
                   </div>
 
                   <div className="bg-white/20 rounded-lg p-2 md:p-4">
@@ -251,32 +251,32 @@ export default function QueuePage() {
                         <div className="text-xl md:text-3xl font-bold text-gold-500 w-8 md:w-12 text-center flex-shrink-0">{index + 2}</div>
 
                         <div className="flex-1 min-w-0">
-                          <p className="text-white font-semibold text-sm md:text-lg truncate">{barbers[booking.barberId] || 'قيد التحديد'}</p>
+                          <p className="text-white font-semibold text-sm md:text-lg truncate">{barbers[booking.barber_id] || 'قيد التحديد'}</p>
                           <div className="flex flex-wrap items-center gap-1 md:gap-2 text-slate-300 text-xs md:text-sm mt-1">
                             <span className="flex items-center gap-1 flex-shrink-0">
-                              📅 {formatDateArabic(new Date(booking.bookingTime).toISOString().split('T')[0])}
+                              📅 {formatDateArabic(new Date(booking.booking_time).toISOString().split('T')[0])}
                             </span>
                             <span className="hidden md:flex items-center gap-1">•</span>
                           </div>
                           <div className="flex flex-wrap items-center gap-1 md:gap-2 text-slate-300 text-xs md:text-sm">
                             <span className="flex items-center gap-1 flex-shrink-0">
                               <Clock size={14} />
-                              {new Date(booking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}
+                              {new Date(booking.booking_time).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}
                             </span>
                             <span className="truncate">
-                              ⚡ {barbers[booking.barberId] 
-                                ? barbers[booking.barberId] 
-                                : booking.barberId ? '⚠️ غير موجود' : '❌ بلا حلاق'}
+                              ⚡ {barbers[booking.barber_id] 
+                                ? barbers[booking.barber_id] 
+                                : booking.barber_id ? '⚠️ غير موجود' : '❌ بلا حلاق'}
                             </span>
                             <span className="truncate">
-                              ⏱️ {booking.duration || '-'} دقيقة
+                              ⏱️ 60 دقيقة
                             </span>
                           </div>
                         </div>
                       </div>
 
                       <div className="text-slate-400 text-xs md:text-sm hidden md:block flex-shrink-0">
-                        {new Date(booking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}
+                        {new Date(booking.booking_time).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5)}
                       </div>
                     </div>
                   ))}

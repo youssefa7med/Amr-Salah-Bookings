@@ -210,17 +210,17 @@ export default function BookingPage() {
           
           const { data, error } = await supabase
             .from('bookings')
-            .select('bookingTime')
-            .eq('barberId', selectedBarber)
-            .gte('bookingTime', startOfDay)
-            .lte('bookingTime', endOfDay)
+            .select('booking_time')
+            .eq('barber_id', selectedBarber)
+            .gte('booking_time', startOfDay)
+            .lte('booking_time', endOfDay)
             .in('status', ['pending', 'confirmed'])
 
           if (!error && data) {
             // Normalize all times to HH:MM format
             const booked = (data || [])
               .map((b: any) => {
-                const time = new Date(b.bookingTime).toLocaleTimeString('en-US', { hour12: false })
+                const time = new Date(b.booking_time).toLocaleTimeString('en-US', { hour12: false })
                 return time.substring(0, 5) // HH:MM format
               })
               .filter((t: string) => t.length > 0)
@@ -311,9 +311,9 @@ export default function BookingPage() {
       const { data, error } = await supabase
         .from('bookings')
         .select('*')
-        .eq('clientPhone', normalizedPhone)
-        .gte('bookingTime', startOfDay)
-        .lte('bookingTime', endOfDay)
+        .eq('client_phone', normalizedPhone)
+        .gte('booking_time', startOfDay)
+        .lte('booking_time', endOfDay)
         .neq('status', 'cancelled')
         .limit(1)
 
@@ -474,8 +474,8 @@ export default function BookingPage() {
       const { data: conflictCheck, error: conflictError } = await supabase
         .from('bookings')
         .select('id')
-        .eq('barberId', pendingBooking.barber_id)
-        .eq('bookingTime', bookingDateTime)
+        .eq('barber_id', pendingBooking.barber_id)
+        .eq('booking_time', bookingDateTime)
         .in('status', ['pending', 'confirmed'])
         .limit(1)
 
@@ -494,8 +494,11 @@ export default function BookingPage() {
 
       // Extract only the fields that exist in the bookings table
       const bookingData = {
-        barberId: pendingBooking.barber_id,
-        bookingTime: `${pendingBooking.booking_date}T${pendingBooking.booking_time}:00`,
+        barber_id: pendingBooking.barber_id,
+        client_name: pendingBooking.customer_name,
+        client_phone: pendingBooking.customer_phone,
+        booking_date: pendingBooking.booking_date,
+        booking_time: pendingBooking.booking_time,
         status: pendingBooking.status,
         notes: pendingBooking.notes,
       }
@@ -708,7 +711,7 @@ export default function BookingPage() {
               <div className="text-amber-100 text-sm">
                 <p className="font-semibold mb-1">{t('bookingAdvanced.phoneWarning')}</p>
                 <p>
-                  <strong>{new Date(existingBooking.bookingTime).toLocaleDateString('ar-EG')}</strong> في الساعة <strong>{formatTime12HourArabic(new Date(existingBooking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</strong>
+                  <strong>{new Date(existingBooking.booking_time).toLocaleDateString('ar-EG')}</strong> في الساعة <strong>{formatTime12HourArabic(new Date(existingBooking.booking_time).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</strong>
                 </p>
                 <p className="text-xs text-amber-200 mt-2">تم حفظ الحجز مسبقاً</p>
               </div>

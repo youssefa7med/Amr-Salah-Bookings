@@ -153,15 +153,15 @@ export default function DashboardPage() {
                     <strong className="text-slate-200 block md:inline">الحلاق: </strong><span className="text-white font-semibold">{booking.barber?.name || '—'}</span>
                   </p>
                   <p className="text-slate-300 py-2">
-                    <strong className="text-slate-200 block md:inline">المدة: </strong><span className="text-white font-semibold">{booking.duration || '--'} دقيقة</span>
+                    <strong className="text-slate-200 block md:inline">المدة: </strong><span className="text-white font-semibold">60 دقيقة</span>
                   </p>
                   <p className="text-slate-300 py-2">
-                    <strong className="text-slate-200 block md:inline">الموعد: </strong><span className="text-gold-400 font-semibold">{formatTime12HourArabic(new Date(booking.bookingTime).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</span>
+                    <strong className="text-slate-200 block md:inline">الموعد: </strong><span className="text-gold-400 font-semibold">{formatTime12HourArabic(new Date(booking.booking_time).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</span>
                   </p>
                   <p className="text-slate-300 py-2">
                     <strong className="text-slate-200 block md:inline">التاريخ: </strong>
                     <span className="text-white font-semibold text-xs md:text-sm">
-                      {format(new Date(booking.bookingTime), 'EEEE، d MMMM yyyy', {
+                      {format(new Date(booking.booking_time), 'EEEE، d MMMM yyyy', {
                         locale: i18n.language === 'ar' ? ar : undefined,
                       })}
                     </span>

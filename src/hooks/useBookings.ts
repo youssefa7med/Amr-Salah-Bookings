@@ -10,10 +10,10 @@ export const useBookings = () => {
       
       const { data: bookings } = await supabase
         .from('bookings')
-        .select('bookingTime, duration')
-        .eq('barberId', barberId)
-        .gte('bookingTime', startOfDay)
-        .lte('bookingTime', endOfDay)
+        .select('booking_time, duration')
+        .eq('barber_id', barberId)
+        .gte('booking_time', startOfDay)
+        .lte('booking_time', endOfDay)
         .in('status', ['pending', 'confirmed'])
 
       // Business hours: 9 AM to 8 PM, 1-hour slots
@@ -24,8 +24,8 @@ export const useBookings = () => {
 
         // Check if slot is available (1-hour duration)
         const isBooked = bookings?.some(b => {
-          const bookingStart = new Date(b.bookingTime).getTime()
-          const bookingEnd = bookingStart + (b.duration || 60) * 60000
+          const bookingStart = new Date(b.booking_time).getTime()
+          const bookingEnd = bookingStart + 60 * 60000 // 1 hour default
           return slotTime >= bookingStart && slotTime < bookingEnd
         })
 

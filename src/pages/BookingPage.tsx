@@ -181,7 +181,7 @@ export default function BookingPage() {
       console.log(`⏰ Setting working hours from settings: ${openingHour}:00 - ${closingHour}:00`)
       // Working hours are now properly configured
     }
-  }, [settings, getOpeningHour, getClosingHour])
+  }, [settings])
 
   const fetchData = async () => {
     try {

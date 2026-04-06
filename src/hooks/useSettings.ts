@@ -65,6 +65,42 @@ export const useSettings = () => {
     fetchSettings()
   }, [fetchSettings])
 
+  // Listen for real-time settings updates from Main App
+  useEffect(() => {
+    console.log('📡 Setting up real-time settings subscription...')
+
+    const subscription = supabase
+      .channel('settings-updates', { config: { broadcast: { self: true } } })
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'settings' },
+        (payload) => {
+          console.log('⚙️ SETTINGS UPDATED:', payload.new)
+          // Update settings state immediately
+          setSettings(payload.new as Settings)
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'settings' },
+        (payload) => {
+          console.log('⚙️ SETTINGS INSERTED:', payload.new)
+          setSettings(payload.new as Settings)
+        }
+      )
+      .subscribe((status) => {
+        console.log('📡 Settings subscription status:', status)
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Connected to real-time settings updates')
+        }
+      })
+
+    return () => {
+      console.log('🔌 Cleaning up settings subscription...')
+      subscription.unsubscribe()
+    }
+  }, [])
+
   // Extract opening and closing hours as numbers
   const getOpeningHour = () => {
     if (!settings?.opening_time) return 9

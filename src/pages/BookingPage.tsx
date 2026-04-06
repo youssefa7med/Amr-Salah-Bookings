@@ -567,13 +567,20 @@ export default function BookingPage() {
         clientId = existingClients[0].id
         console.log('✅ Found existing client:', clientId)
       } else {
-        // Create new client
+        // Create new client with complete data
         const { data: newClient, error: createClientError } = await supabase
           .from('clients')
           .insert({
             name: pendingBooking.customer_name.trim(),
             phone: pendingBooking.customer_phone,
-            status: 'active',
+            email: null,
+            birth_date: null,
+            notes: pendingBooking.notes?.trim() || null,
+            total_visits: 0,  // First booking
+            total_spent: 0,   // No purchases yet
+            vip: false,       // Not VIP by default
+            last_visit: null,
+            shop_id: null,    // Will be added if multi-shop later
           })
           .select('id')
           .single()
@@ -584,7 +591,7 @@ export default function BookingPage() {
         }
 
         clientId = newClient.id
-        console.log('✅ Created new client:', clientId)
+        console.log('✅ Created new client:', clientId, 'with name:', pendingBooking.customer_name)
       }
 
       // Step 2: Create booking with client_id

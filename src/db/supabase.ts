@@ -54,6 +54,21 @@ export interface Booking {
   updated_at: string
 }
 
+export interface Settings {
+  id: string
+  shop_name: string
+  phone?: string
+  email?: string
+  address?: string
+  opening_time: string // HH:MM:SS
+  closing_time: string // HH:MM:SS
+  currency: string
+  language: string
+  theme: string
+  created_at: string
+  updated_at: string
+}
+
 export interface WorkingHours {
   id: string
   barber_id: string

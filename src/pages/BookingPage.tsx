@@ -1,15 +1,19 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { supabase, Barber, Service, Booking } from '@/db/supabase'
+import { useSettings } from '@/hooks/useSettings'
 import toast from 'react-hot-toast'
 import { AlertCircle, Clock, CheckCircle2 } from 'lucide-react'
 import { formatTime12Hour, formatTime12HourArabic } from '@/utils/formatTime'
 
-// Fixed time slots - 1 hour intervals (9 AM to 6 PM)
-const TIME_SLOTS = [
-  '09:00', '10:00', '11:00', '12:00', '13:00',
-  '14:00', '15:00', '16:00', '17:00', '18:00',
-]
+// Generate time slots based on opening and closing hours
+const generateTimeSlots = (openingHour: number, closingHour: number): string[] => {
+  const slots: string[] = []
+  for (let hour = openingHour; hour < closingHour; hour++) {
+    slots.push(`${String(hour).padStart(2, '0')}:00`)
+  }
+  return slots
+}
 
 interface WorkingHours {
   id: string
@@ -102,6 +106,7 @@ const compareTimeStrings = (time1: string, time2: string): number => {
 export default function BookingPage() {
   const { t, i18n } = useTranslation()
   const isArabic = i18n.language === 'ar'
+  const { settings, getOpeningHour, getClosingHour } = useSettings()
   const [barbers, setBarbers] = useState<Barber[]>([])
   const [services, setServices] = useState<Service[]>([])
   const [bookedSlots, setBookedSlots] = useState<string[]>([])
@@ -167,6 +172,16 @@ export default function BookingPage() {
     
     return () => clearInterval(interval)
   }, [confirmationStep, barbers, services])
+
+  // Update working hours from settings
+  useEffect(() => {
+    if (settings) {
+      const openingHour = getOpeningHour()
+      const closingHour = getClosingHour()
+      console.log(`⏰ Setting working hours from settings: ${openingHour}:00 - ${closingHour}:00`)
+      // Working hours are now properly configured
+    }
+  }, [settings, getOpeningHour, getClosingHour])
 
   const fetchData = async () => {
     try {
@@ -262,7 +277,8 @@ export default function BookingPage() {
             console.log(`   Start: ${hours.start_time}, End: ${hours.end_time}, Is Working: ${hours.is_working}`)
             
             if (hours.is_working) {
-              const slots = TIME_SLOTS.filter(slot => {
+              const allSlots = generateTimeSlots(getOpeningHour(), getClosingHour())
+              const slots = allSlots.filter((slot: string) => {
                 const startCmp = compareTimeStrings(slot, hours.start_time)
                 const endCmp = compareTimeStrings(slot, hours.end_time)
                 const isValid = startCmp >= 0 && endCmp <= 0
@@ -277,12 +293,14 @@ export default function BookingPage() {
             }
           } else {
             setWorkingHours([])
-            setAvailableSlots(TIME_SLOTS)
-            console.log('⚠️ No working hours defined, using all slots')
+            const allSlots = generateTimeSlots(getOpeningHour(), getClosingHour())
+            setAvailableSlots(allSlots)
+            console.log('⚠️ No working hours defined, using settings hours')
           }
         } catch (err: any) {
           console.error('Error fetching working hours:', err)
-          setAvailableSlots(TIME_SLOTS)
+          const allSlots = generateTimeSlots(getOpeningHour(), getClosingHour())
+          setAvailableSlots(allSlots)
         }
       }
       
@@ -539,9 +557,12 @@ export default function BookingPage() {
       const { error } = await supabase.from('bookings').insert([bookingData])
 
       if (error) {
-        console.error('Supabase error details:', error)
+        console.error('❌ Supabase error details:', error)
         throw error
       }
+
+      console.log('✅ Booking successfully inserted into database:', bookingData)
+      toast.success('تم إرسال الحجز بنجاح! ✅')
 
       // Show success state
       setConfirmationStep('success')
@@ -691,8 +712,8 @@ export default function BookingPage() {
               )}
 
               <div className="grid grid-cols-4 gap-2 mb-4">
-                {TIME_SLOTS.length > 0 ? (
-                  TIME_SLOTS.map((slot) => {
+                {generateTimeSlots(getOpeningHour(), getClosingHour()).length > 0 ? (
+                  generateTimeSlots(getOpeningHour(), getClosingHour()).map((slot) => {
                     const isBooked = bookedSlots.includes(slot)
                     const isPast = isPastTime(slot, selectedDate)
                     const isOutsideWorkingHours = !availableSlots.includes(slot)

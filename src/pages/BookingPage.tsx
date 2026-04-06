@@ -710,9 +710,9 @@ export default function BookingPage() {
             <div className="bg-amber-500/20 border border-amber-500 rounded-lg p-4 flex gap-3">
               <AlertCircle className="text-amber-500 flex-shrink-0 mt-0.5" size={20} />
               <div className="text-amber-100 text-sm">
-                <p className="font-semibold mb-1">{t('bookingAdvanced.phoneWarning')}</p>
+                <p className="font-semibold mb-1">⚠️ هذا الرقم محجوز بالفعل في</p>
                 <p>
-                  <strong>{new Date(existingBooking.booking_time).toLocaleDateString('ar-EG')}</strong> في الساعة <strong>{formatTime12HourArabic(new Date(existingBooking.booking_time).toLocaleTimeString('en-US', { hour12: false }).substring(0, 5))}</strong>
+                  <strong>{new Date(existingBooking.booking_date + 'T00:00:00').toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong> في الساعة <strong>{formatTime12HourArabic(existingBooking.booking_time)}</strong>
                 </p>
                 <p className="text-xs text-amber-200 mt-2">تم حفظ الحجز مسبقاً</p>
               </div>

@@ -5,15 +5,11 @@ export const useBookings = () => {
   const getAvailableSlots = useCallback(async (barberId: string, bookingDate: string) => {
     try {
       // Get all bookings for that barber on that day
-      const startOfDay = `${bookingDate}T00:00:00`
-      const endOfDay = `${bookingDate}T23:59:59`
-      
       const { data: bookings } = await supabase
         .from('bookings')
         .select('booking_time, duration')
         .eq('barber_id', barberId)
-        .gte('booking_time', startOfDay)
-        .lte('booking_time', endOfDay)
+        .eq('booking_date', bookingDate)
         .in('status', ['pending', 'confirmed'])
 
       // Business hours: 9 AM to 8 PM, 1-hour slots

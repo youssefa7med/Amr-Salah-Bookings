@@ -488,6 +488,7 @@ export default function BookingPage() {
       // Extract only the fields that exist in the bookings table
       const bookingData = {
         barber_id: pendingBooking.barber_id,
+        service_id: pendingBooking.service_id,
         client_name: pendingBooking.customer_name,
         client_phone: pendingBooking.customer_phone,
         booking_date: pendingBooking.booking_date,
@@ -506,12 +507,19 @@ export default function BookingPage() {
       // Show success state
       setConfirmationStep('success')
     } catch (err: any) {
-      console.error('Booking error full:', err)
+      console.error('❌ Booking error full details:', err)
+      console.error('Error code:', err.code)
+      console.error('Error message:', err.message)
+      console.error('Error details:', err.details)
       
       if (err.message?.includes('uuid')) {
         toast.error('❌ خطأ في البيانات - تأكد من اختيار الحلاق والخدمة')
       } else if (err.code === '22P02') {
         toast.error('❌ صيغة بيانات غير صحيحة - حاول مرة أخرى')
+      } else if (err.message?.includes('service_id')) {
+        toast.error('❌ اختر خدمة قبل الحجز من فضلك')
+      } else if (err.message?.includes('barber_id')) {
+        toast.error('❌ اختر حلاق قبل الحجز من فضلك')
       } else {
         toast.error('❌ حدث خطأ: ' + (err.message || 'حاول مرة أخرى'))
       }

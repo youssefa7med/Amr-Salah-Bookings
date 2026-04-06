@@ -503,7 +503,6 @@ export default function BookingPage() {
         service_id: pendingBooking.service_id,
         customer_name: pendingBooking.customer_name,
         customer_phone: pendingBooking.customer_phone,
-        customer_email: pendingBooking.customer_email,
         booking_date: pendingBooking.booking_date,
         booking_time: pendingBooking.booking_time,
         status: pendingBooking.status,

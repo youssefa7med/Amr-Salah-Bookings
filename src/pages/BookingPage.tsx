@@ -187,7 +187,7 @@ export default function BookingPage() {
     try {
       const [barbersRes, servicesRes] = await Promise.all([
         supabase.from('barbers').select('*'),
-        supabase.from('services').select('id, name, name_ar, price, duration, active'),
+        supabase.from('services').select('*'),
       ])
 
       if (barbersRes.error) throw barbersRes.error
@@ -197,22 +197,7 @@ export default function BookingPage() {
       console.log('✅ Fetched services:', servicesRes.data)
 
       setBarbers(barbersRes.data || [])
-      
-      // Map services data to match Service interface
-      const mappedServices = (servicesRes.data || []).map((s: any) => ({
-        id: s.id,
-        name_ar: s.name_ar || 'خدمة',
-        name_en: s.name || 'Service',
-        namear: s.name_ar,  // Fallback for camelCase
-        nameen: s.name,     // Fallback for camelCase
-        price: s.price || 0,
-        duration_minutes: s.duration || 30,
-        category: 'general',
-        is_active: s.active !== false,  // Default to true
-      })) as Service[]
-      
-      console.log('✅ Mapped services:', mappedServices)
-      setServices(mappedServices)
+      setServices(servicesRes.data || [])
 
       // Auto-select first barber and first service
       if (barbersRes.data && barbersRes.data.length > 0) {
@@ -467,9 +452,8 @@ export default function BookingPage() {
     console.log('🔍 Available Barbers:', barbers.map(b => ({ id: b.id, name: b.name })))
     console.log('🔍 Matched Barber Data:', barberData)
     console.log('🔍 Selected Service ID:', selectedService)
-    console.log('🔍 Available Services:', services.map(s => ({ id: s.id, nameAr: (s as any).nameAr, name_ar: (s as any).name_ar, name: (s as any).name })))
+    console.log('🔍 Available Services:', services.map(s => ({ id: s.id, data: s })))
     console.log('🔍 Matched Service Data:', serviceData)
-    console.log('🔍 Service Data Keys:', serviceData ? Object.keys(serviceData) : 'null')
     
     // Normalize the selected time to HH:MM format
     const normalizeTimeHelper = (time: string): string => {
@@ -480,24 +464,30 @@ export default function BookingPage() {
       return time
     }
     
-    // Get service name with multiple fallbacks
+    // Get service name - try all possible fields
     let serviceName = 'خدمة عامة'
     if (serviceData) {
-      serviceName = (serviceData as any).nameAr || (serviceData as any).name_ar || (serviceData as any).name || (serviceData as any).namear || 'خدمة عامة'
+      serviceName = 
+        (serviceData as any).name_ar ||
+        (serviceData as any).nameAr ||
+        (serviceData as any).namear ||
+        (serviceData as any).name_en ||
+        (serviceData as any).nameEn ||
+        (serviceData as any).name ||
+        'خدمة عامة'
     }
-    console.log('✅ Final service name:', serviceName)
     
     const booking = {
       barber_id: selectedBarber,
       service_id: selectedService,
-      barber_name: barberData?.name || selectedBarber + ' (ID)',  // Show ID if name missing
+      barber_name: barberData?.name || selectedBarber + ' (ID)',
       service_name: serviceName,
       service_price: (serviceData as any)?.price || 0,
       service_duration: (serviceData as any)?.duration_minutes || (serviceData as any)?.duration || 0,
       customer_name: customerName.trim(),
       customer_phone: normalizedPhone,
       booking_date: selectedDate,
-      booking_time: normalizeTimeHelper(selectedTime), // Normalize to HH:MM format
+      booking_time: normalizeTimeHelper(selectedTime),
       status: 'pending',
       notes: notes?.trim() || null,
     }
